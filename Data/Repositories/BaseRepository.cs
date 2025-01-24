@@ -1,5 +1,4 @@
-﻿
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
 using Data.Contexts;
 using Data.Interfaces;
@@ -32,14 +31,12 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
     {
         return await _dbSet.ToListAsync();
     }
-
     public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
     {
         if (expression == null)
             return null!;
         return await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
     }
-
     public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
     {
         if (updateEntity == null)
@@ -60,14 +57,28 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
             return null!;
         }
     }
-
     public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
     {
-        throw new NotImplementedException();
-    }
+        if (expression == null)
+            return false;
+        try
+        {
+            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
+            if (existingEntity == null)
+                return false;
 
+            _dbSet.Remove(existingEntity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
+            return false;
+        }
+    }
      public virtual async Task<bool> AlreadyExisitAsync(Expression<Func<TEntity, bool>> expression)
     {
-        throw new NotImplementedException();
+        return await _dbSet.AnyAsync(expression);
     }
 }
