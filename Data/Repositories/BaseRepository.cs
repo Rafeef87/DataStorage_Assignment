@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
-public abstract class BaseRepository<TEntity>(DataContext context): IBaseRepository<TEntity> where TEntity : class
+public abstract class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEntity> where TEntity : class
 {
     private readonly DataContext _context = context;
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
@@ -77,7 +77,7 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
             return false;
         }
     }
-     public virtual async Task<bool> AlreadyExisitAsync(Expression<Func<TEntity, bool>> expression)
+     public virtual async Task<bool> AlreadyExistsAsync(Expression<Func<TEntity, bool>> expression)
     {
         return await _dbSet.AnyAsync(expression);
     }
