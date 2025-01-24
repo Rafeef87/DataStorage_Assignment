@@ -1,12 +1,59 @@
 ﻿
+using System.Diagnostics;
+using System.Linq.Expressions;
 using Data.Contexts;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
 
-public abstract class BaseRepository<TEntity>(DataContext context) where TEntity : class, IBaseRepository
+public abstract class BaseRepository<TEntity>(DataContext context): IBaseRepository<TEntity> where TEntity : class
 {
     private readonly DataContext _context = context;
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+
+   
+
+    public virtual async Task<TEntity> CreateAsync(TEntity entity)
+    {
+        if (entity == null)
+            return null!;
+        try
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+        catch (Exception ex) 
+        {
+            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
+            return null!;
+        }
+    }
+
+
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        throw new NotImplementedException();
+    }
+
+    public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        throw new NotImplementedException();
+    }
+
+     public virtual async Task<bool> AlreadyExisitAsync(Expression<Func<TEntity, bool>> expression)
+    {
+        throw new NotImplementedException();
+    }
 }

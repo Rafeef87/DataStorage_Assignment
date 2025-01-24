@@ -1,5 +1,4 @@
-﻿
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Data.Interfaces;
 
@@ -11,5 +10,4 @@ public interface IBaseRepository<TEntity> where TEntity : class
     Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression);
     Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity);
     Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression);
-
 }
