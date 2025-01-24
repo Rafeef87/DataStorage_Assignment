@@ -2,8 +2,10 @@
 
 namespace Business.Dtos;
 
-public class ProductRegistrationForm
+public class ProductUpdateForm
 {
+    [Required]
+    public int Id { get; set; }
     [Required]
     public string ProductName { get; set; } = null!;
     [Required]
