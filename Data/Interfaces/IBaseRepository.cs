@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Data.Interfaces;
 
-public interface IBaseReporitory<TEntity> where TEntity : class
+public interface IBaseRepository<TEntity> where TEntity : class
 {
     Task<bool> AlreadyExisitAsync(Expression<Func<TEntity, bool>> expression);
     Task<TEntity> CreateAsync(TEntity entity);
