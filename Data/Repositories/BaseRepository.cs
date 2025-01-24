@@ -42,7 +42,23 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
 
     public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
     {
-        throw new NotImplementedException();
+        if (updateEntity == null)
+            return null!;
+        try
+        {
+            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
+            if (existingEntity == null)
+                return null!;
+
+            _context.Entry(existingEntity).CurrentValues.SetValues(updateEntity);
+            await _context.SaveChangesAsync();
+            return existingEntity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
+            return null!;
+        }
     }
 
     public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
