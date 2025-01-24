@@ -18,4 +18,14 @@ public static class StatusTypeFactory
         Id = entity.Id,
         StatusName = entity.StatusName
     };
+    public static StatusTypeUpdateForm Create(StatusType statusType) => new()
+    {
+        Id = statusType.Id,
+        StatusName = statusType.StatusName
+    };
+    public static StatusTypeEntity Create(StatusTypeUpdateForm form) => new()
+    {
+        Id = form.Id,
+        StatusName = form.StatusName,
+    };
 }

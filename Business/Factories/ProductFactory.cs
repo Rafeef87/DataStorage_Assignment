@@ -20,4 +20,16 @@ public static class ProductFactory
         ProductName = entity.ProductName,
         Price = entity.Price
     };
+    public static ProductUpdateForm Create(Product product) => new()
+    {
+        Id = product.Id,
+        ProductName = product.ProductName,
+        Price = product.Price
+    };
+    public static ProductEntity Create(ProductUpdateForm form) => new()
+    {
+        Id = form.Id,
+        ProductName = form.ProductName,
+        Price = form.Price
+    };
 }

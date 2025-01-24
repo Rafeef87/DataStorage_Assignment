@@ -22,4 +22,18 @@ public static class UserFactory
         LastName = entity.LastName,
         Email = entity.Email
     };
+    public static UserUpdateForm Create(User user) => new()
+    {
+        Id = user.Id,
+        FirstName = user.FirstName,
+        LastName = user.LastName,
+        Email = user.Email
+    };
+    public static UserEntity Create(UserUpdateForm form) => new()
+    {
+        Id = form.Id,
+        FirstName = form.FirstName,
+        LastName = form.LastName,
+        Email = form.Email
+    };
 }
