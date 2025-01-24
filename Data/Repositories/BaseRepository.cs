@@ -12,8 +12,6 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
     private readonly DataContext _context = context;
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-   
-
     public virtual async Task<TEntity> CreateAsync(TEntity entity)
     {
         if (entity == null)
@@ -30,16 +28,16 @@ public abstract class BaseRepository<TEntity>(DataContext context): IBaseReposit
             return null!;
         }
     }
-
-
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _dbSet.ToListAsync();
     }
 
     public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
     {
-        throw new NotImplementedException();
+        if (expression == null)
+            return null!;
+        return await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
     }
 
     public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
