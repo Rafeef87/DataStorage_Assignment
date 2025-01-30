@@ -23,23 +23,23 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
     public async Task<IEnumerable<StatusType>> GetAllStatusTypesAsync()
     {
         var entties = await _statusTypeRepository.GetAllAsync();
-        var StatusTypes = entties.Select(StatusTypeFactory.Create);
-        return StatusTypes ?? [];
+        var statusTypes = entties.Select(StatusTypeFactory.Create);
+        return statusTypes ?? [];
     }
     public async Task<StatusType> GetStatusTypeAsync(Expression<Func<StatusTypeEntity, bool>> expression)
     {
 
         var enttiy = await _statusTypeRepository.GetAsync(expression);
-        var StatusType = StatusTypeFactory.Create(enttiy);
-        return StatusType ?? null!;
+        var statusType = StatusTypeFactory.Create(enttiy);
+        return statusType ?? null!;
     }
     //UPDATE
     public async Task<StatusType> UpdateStatusTypeAsync(StatusTypeUpdateForm form)
     {
         var updateEntity = StatusTypeFactory.Create(form);
         var entity = await _statusTypeRepository.UpdateAsync(p => p.Id == form.Id, updateEntity);
-        var StatusType = StatusTypeFactory.Create(entity);
-        return StatusType ?? null!;
+        var statusType = StatusTypeFactory.Create(entity);
+        return statusType ?? null!;
     }
     //DELETE
     public async Task<bool> DeleteStatusTypeAsync(int id)
