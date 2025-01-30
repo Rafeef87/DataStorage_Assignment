@@ -10,6 +10,6 @@ public interface IProductService
     Task<Product> CreateProductAsync(ProductRegistrationForm form);
     Task<IEnumerable<Product>> GetAllProductsAsync();
     Task<Product> GetProductAsync(Expression<Func<ProductEntity, bool>> expression);
-    Task<Product> UpdateProductAsync(ProductUpdateForm from);
+    Task<Product> UpdateProductAsync(ProductUpdateForm form);
     Task<bool> DeleteProductAsync(int id);
 }

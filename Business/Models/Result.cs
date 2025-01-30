@@ -25,6 +25,10 @@ public abstract class Result : IResult
     {
         return new ErrorResult(409, message);
     }
+    public static Result Error(string message)
+    {
+        return new ErrorResult(500, message);
+    }
 }
 public class Result<T> : Result
 {
