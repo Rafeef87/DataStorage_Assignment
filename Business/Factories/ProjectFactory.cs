@@ -8,6 +8,7 @@ public static class ProjectFactory
 {
     public static ProjectRegistrationForm Create() => new();
 
+    //public static ProjectUpdateForm Update() => new();
     public static ProjectEntity Create(ProjectRegistrationForm form) => new()
     {
         ProjectName = form.ProjectName,
@@ -18,8 +19,15 @@ public static class ProjectFactory
         UserId = form.UserId,
         ProductId = form.ProductId,
     };
+    
 
-    public static Project Create(ProjectEntity entity) => new()
+    // This method creates a Project from a ProjectEntity
+    public static Project Create(ProjectEntity entity) 
+    {
+         if (entity == null)
+        throw new ArgumentNullException(nameof(entity), "ProjectEntity is null in ProjectFactory.Create");
+
+    return new Project()
     {
         Id = entity.Id,
         ProjectName = entity.ProjectName,
@@ -30,17 +38,8 @@ public static class ProjectFactory
         UserId = entity.UserId,
         ProductId = entity.ProductId,
     };
-    public static ProjectUpdateForm Create(Project project) => new()
-    {
-        Id = project.Id,
-        ProjectName = project.ProjectName,
-        StartDate = project.StartDate,
-        EndDate = project.EndDate,
-        CustomerId = project.CustomerId,
-        StatusId = project.StatusId,
-        UserId = project.UserId,
-        ProductId = project.ProductId
-    };
+    }
+    // This method creates a ProjectEntity from a ProjectUpdateForm
     public static ProjectEntity Create(ProjectUpdateForm form) => new()
     {
         Id = form.Id,
@@ -52,4 +51,20 @@ public static class ProjectFactory
         UserId = form.UserId,
         ProductId = form.ProductId
     };
+
+    // This method creates a ProjectUpdateForm from a Project
+    public static ProjectUpdateForm Create(Project project) => new()
+    {
+        Id = project.Id,
+        ProjectName = project.ProjectName,
+        StartDate = project.StartDate,
+        EndDate = project.EndDate,
+        CustomerId = project.CustomerId,
+        StatusId = project.StatusId,
+        UserId = project.UserId,
+        ProductId = project.ProductId
+    };
+
+
+
 }

@@ -58,32 +58,33 @@ public class MenuDialog(IProjectService projectService)
     private async Task CreateProjectDialog()
     {
         Console.Clear ();
-
-        ProjectRegistrationForm projectRegistrationForm = ProjectFactory.Create();
+        // Create a new ProjectRegistrationForm object
+        var projectRegistrationForm = new ProjectRegistrationForm();
 
         Console.WriteLine("¤¤¤ CREATE PROJECT ¤¤¤");
 
         Console.Write("ENTER PROJECT NAME:");
-        var projectName = Console.ReadLine()!;
+        projectRegistrationForm.ProjectName = Console.ReadLine()!;
 
-        Console.Write("ENTER START DATE");
-        var startDate = Console.ReadLine()!;
+        Console.Write("ENTER START DATE (yyyy-MM-dd): ");
+        projectRegistrationForm.StartDate = DateTime.Parse(Console.ReadLine()!);
 
-        Console.Write("ENTER END DATE");
-        var endDate = Console.ReadLine()!;
+        Console.Write("ENTER END DATE (yyyy-MM-dd): ");
+        projectRegistrationForm.EndDate = DateTime.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-        var customerId = Console.ReadLine()!;
+        Console.Write("ENTER CUSTOMER Id:");
+        projectRegistrationForm.CustomerId = int.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-        var statusId = Console.ReadLine()!;
+        Console.Write("ENTER STATUS Id: ");
+        projectRegistrationForm.StatusId = int.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-        var userId = Console.ReadLine()!;
+        Console.Write("ENTER USER Id: ");
+        projectRegistrationForm.UserId = int.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-       var productId= Console.ReadLine()!;
+        Console.Write("ENTER PRODUCT Id: ");
+        projectRegistrationForm.ProductId = int.Parse(Console.ReadLine()!);
 
+        // Send the completed form to the service repository
         var result = await _projectService.CreateProjectAsync(projectRegistrationForm);
         if (result != null)
         {
@@ -112,30 +113,43 @@ public class MenuDialog(IProjectService projectService)
     private async Task UpdateProjectDialog()
     {
         Console.Clear();
-        ProjectUpdateForm projectUpdateForm = new ProjectUpdateForm();
+        var projectUpdateForm = new ProjectUpdateForm();
 
         Console.WriteLine("¤¤¤ UPDATE PROJECT ¤¤¤");
 
-        Console.Write("NEW PROJECT NAME:");
-        var projectName = Console.ReadLine()!;
+        Console.Write("PROJECT NUMBER: ");
+        projectUpdateForm.Id = int.Parse(Console.ReadLine()!);
 
-        Console.Write("NEW START DATE");
-        var startDate = Console.ReadLine()!;
+        Console.Write("NEW PROJECT NAME: ");
+        projectUpdateForm.ProjectName = Console.ReadLine()!;
 
-        Console.Write("NEW END DATE");
-        var endDate = Console.ReadLine()!;
+        Console.Write("NEW START DATE (yyyy-MM-dd): ");
+        if (!DateTime.TryParse(Console.ReadLine(), out var startDate))
+        {
+            Console.WriteLine("Invalid date format.");
+            return;
+        }
+        projectUpdateForm.StartDate = startDate;
 
-        Console.Write("");
-        var customerId = Console.ReadLine()!;
+        Console.Write("NEW END DATE (yyyy-MM-dd): ");
+        if (!DateTime.TryParse(Console.ReadLine(), out var endDate))
+        {
+            Console.WriteLine("Invalid date format.");
+            return;
+        }
+        projectUpdateForm.EndDate = endDate;
 
-        Console.Write("");
-        var statusId = Console.ReadLine()!;
+        Console.Write("NEW CUSTOMER Id: ");
+        projectUpdateForm.CustomerId = int.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-        var userId = Console.ReadLine()!;
+        Console.Write("NEW STATUS Id: ");
+        projectUpdateForm.StatusId = int.Parse(Console.ReadLine()!);
 
-        Console.Write("");
-        var productId = Console.ReadLine()!;
+        Console.Write("NEW USER Id: ");
+        projectUpdateForm.UserId = int.Parse(Console.ReadLine()!);
+
+        Console.Write("NEW PRODUCT Id: ");
+        projectUpdateForm.ProductId = int.Parse(Console.ReadLine()!);
 
         var result = await _projectService.UpdateProjectAsync(projectUpdateForm);
         if (result != null)

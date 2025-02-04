@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using Business.Dtos;
 using Business.Factories;
 using Business.Interfaces;
@@ -14,10 +15,17 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
     //CREATE
     public async Task<Project> CreateProjectAsync(ProjectRegistrationForm form)
     {
-        var enttiy = await _projectRepository.GetAsync(x => x.ProjectName == form.ProjectName);
-        enttiy ??= await _projectRepository.CreateAsync(ProjectFactory.Create(form));
+        try
+        {
+            var enttiy = await _projectRepository.CreateAsync(ProjectFactory.Create(form));
 
-        return ProjectFactory.Create(enttiy);
+            return ProjectFactory.Create(enttiy);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
     //READ
     public async Task<IEnumerable<Project>> GetAllProjectsAsync()
@@ -36,15 +44,33 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
     //UPDATE
     public async Task<Project> UpdateProjectAsync(ProjectUpdateForm form)
     {
-        var updateEntity = ProjectFactory.Create(form);
-        var entity = await _projectRepository.UpdateAsync(p => p.Id == form.Id, updateEntity);
-        var project = ProjectFactory.Create(entity);
-        return project ?? null!;
+        try {
+            var updateEntity = ProjectFactory.Create(form);
+
+            // Update the project in the database by submitting the correct entity
+            var entity = await _projectRepository.UpdateAsync(x => x.Id == form.Id, updateEntity);
+            // Create a Project object (for use in the application) from the updated ProjectEntity
+            var project = ProjectFactory.Create(entity);
+            return project ?? null!;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
     //DELETE
     public async Task<bool> DeleteProjectAsync(int id)
     {
-        var result = await _projectRepository.DeleteAsync(x => x.Id == id);
-        return result;
+        try
+        {
+            var result = await _projectRepository.DeleteAsync(x => x.Id == id);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return false;
+        }
     }
 }

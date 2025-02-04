@@ -17,9 +17,9 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         try
         {
-            await _dbSet.AddAsync(entity);
+            var addedEntity = await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
-            return entity;
+            return addedEntity.Entity; //This returns the saved object
         }
         catch (Exception ex) 
         {
@@ -43,9 +43,12 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         try
         {
-            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
+            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression);
             if (existingEntity == null)
-                return null!;
+            { 
+                Debug.WriteLine($"Entity with ID {expression} not found.");
+            return null!;
+            }
 
             _context.Entry(existingEntity).CurrentValues.SetValues(updateEntity);
             await _context.SaveChangesAsync();
