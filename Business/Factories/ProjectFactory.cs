@@ -64,7 +64,21 @@ public static class ProjectFactory
         UserId = project.UserId,
         ProductId = project.ProductId
     };
-
+    //This method return a detailed DTO
+    public static ProjectDetailsDto Create(Project project, Customer customer, StatusType status, User user, Product product)
+    {
+        return new ProjectDetailsDto
+        {
+            Id = project.Id,
+            ProjectName = project.ProjectName,
+            StartDate = project.StartDate,
+            EndDate = project.EndDate,
+            CustomerName = customer.CustomerName,
+            StatusName = status.StatusName,
+            UserName = user.FirstName,
+            ProductName = product.ProductName
+        };
+    }
 
 
 }

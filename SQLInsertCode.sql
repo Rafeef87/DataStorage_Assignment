@@ -10,7 +10,7 @@
 --INSERT INTO StatusTypes VALUES ('Ongoing')
 --INSERT INTO StatusTypes VALUES ('Completed')
 
-INSERT INTO Users VALUES ('Rofo', 'Kh', 'rofo@domin.com')
-INSERT INTO Users VALUES ('Adn', 'Kha', 'adnlab@test.com')
+--INSERT INTO Users VALUES ('Rofo', 'Kh', 'rofo@domin.com')
+--INSERT INTO Users VALUES ('Adn', 'Kha', 'adnlab@test.com')
 
 
