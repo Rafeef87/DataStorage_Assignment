@@ -10,7 +10,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
 {
     private readonly DataContext _context = context;
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
-
+    //CREATE
     public virtual async Task<TEntity> CreateAsync(TEntity entity)
     {
         if (entity == null)
@@ -27,6 +27,21 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         }
     }
+    //Detta är genererat av Chat GPT 4o - en metod för att inkludera relaterade tabeller. READ
+    public virtual async Task<IEnumerable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[] includeProperties)
+    {
+        IQueryable<TEntity> query = _dbSet;
+
+        foreach (var includeProperty in includeProperties)
+        {
+            query = query.Include(includeProperty);
+        }
+
+        return await query.ToListAsync();
+    }
+    //END genererat av Chat GPT 4o.
+
+    //READ
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();
@@ -37,6 +52,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         return await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
     }
+    //UPDATE
     public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
     {
         if (updateEntity == null)
@@ -60,6 +76,7 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
             return null!;
         }
     }
+    //DELETE
     public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
     {
         if (expression == null)

@@ -97,18 +97,41 @@ public class MenuDialog(IProjectService projectService)
         }
         Console.ReadKey();
     }
+
     private async Task GetAllProjectDialog()
     {
         Console.Clear();
         Console.WriteLine("-------- ALL PROJECTS -------");
-        var projects = await _projectService.GetAllProjectsAsync();
+
+        var projects = await _projectService.GetAllProjectsAsyncFK();
 
         foreach (var project in projects)
         {
-            Console.WriteLine($"[{project.Id},{project.ProjectName},{project.StartDate},{project.EndDate},{project.CustomerId},{project.StatusId},{project.UserId},{project.ProductId}]");
+            Console.WriteLine($"Project: {project.ProjectName}");
+            Console.WriteLine($"Start Date: {project.StartDate:yyyy-MM-dd}");
+            Console.WriteLine($"End Date: {project.EndDate:yyyy-MM-dd}");
+            Console.WriteLine($"Customer: {project.CustomerName}");
+            Console.WriteLine($"Status: {project.StatusName}");
+            Console.WriteLine($"User: {project.UserName}");
+            Console.WriteLine($"Product: {project.ProductName}");
+            Console.WriteLine("-------------------------------");
         }
+
         Console.ReadKey();
     }
+
+    //private async Task GetAllProjectDialog()
+    //{
+    //    Console.Clear();
+    //    Console.WriteLine("-------- ALL PROJECTS -------");
+    //    var projects = await _projectService.GetAllProjectsAsync();
+
+    //    foreach (var project in projects)
+    //    {
+    //        Console.WriteLine($"[{project.Id},{project.ProjectName},{project.StartDate},{project.EndDate},{project.CustomerId},{project.StatusId},{project.UserId},{project.ProductId}]");
+    //    }
+    //    Console.ReadKey();
+    //}
 
     private async Task UpdateProjectDialog()
     {

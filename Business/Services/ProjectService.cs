@@ -28,6 +28,14 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
         }
     }
     //READ
+    public async Task<IEnumerable<ProjectDetailsDto>> GetAllProjectsAsyncFK()
+    {
+        var entities = await _projectRepository
+            .GetAllIncludingAsync(p => p.Customer, p => p.Status, p => p.User, p => p.Product);
+        
+        var projects = entities.Select(ProjectFactory.Read);
+        return projects;
+    }
     public async Task<IEnumerable<Project>> GetAllProjectsAsync()
     {
         var entties = await _projectRepository.GetAllAsync();
