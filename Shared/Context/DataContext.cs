@@ -7,10 +7,8 @@ namespace Shared.Context;
 
 public class DataContext : DbContext 
 {
-    public DbSet<ProjectEntity> Projects { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
-        options.UseSqlite("Filename = projects.db");
     }
+    public DbSet<ProjectEntity> Projects { get; set; } = null!;
 }
