@@ -7,5 +7,5 @@ public class ProductRegistrationForm
     [Required]
     public string ProductName { get; set; } = null!;
     [Required]
-    public decimal Price { get; set; }
+    public decimal Price { get; set; } = decimal.Zero;
 }
