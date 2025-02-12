@@ -7,11 +7,12 @@ using Business.Services;
 
 namespace Presentation.ConsoleApp.Dialogs;
 
-public class MenuDialog(IProjectService projectService, ICustomerService customerService, IProductService productService)
+public class MenuDialog(IProjectService projectService, ICustomerService customerService, IProductService productService, IStatusTypeService statusTypeService)
 {
     private readonly IProjectService _projectService= projectService;
     private readonly ICustomerService _customerService = customerService;
     private readonly IProductService _productService = productService;
+    private readonly IStatusTypeService _statusTypeService = statusTypeService;
 
     public async Task ShowMenu()
     {
@@ -38,6 +39,12 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
             Console.WriteLine("10. VIEW ALL PRODUCT ");
             Console.WriteLine("11. UPDATE PRODUCT ");
             Console.WriteLine("12. DELELTE PRODUCT ");
+
+            Console.WriteLine("¤¤¤  STATUS TYPE MENU ¤¤¤");
+            Console.WriteLine("13. CREATE NEW STATUS TYPE ");
+            Console.WriteLine("14. VIEW ALL STATUS TYPE ");
+            Console.WriteLine("15. UPDATE STATUS TYPE ");
+            Console.WriteLine("16. DELELTE STATUS TYPE ");
 
             Console.WriteLine("q EXIT APPLICATION");
             Console.WriteLine("-----------------------------");
@@ -84,6 +91,19 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
                 case "12":
                     await DeleteProductDialog();
                     break;
+                case "13":
+                    await CreateStatusTypeDialog();
+                    break;
+                case "14":
+                    await GetAllStatusTypesDialog();
+                    break;
+                case "15":
+                    await UpdateStatusTypeDialog();
+                    break;
+                case "16":
+                    await DeleteStatusTypeDialog();
+                    break;
+
                 case "q":
                     Console.WriteLine("PRESS ANY KEY TO EXIT.");
                     Console.ReadKey();
@@ -417,7 +437,7 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
 
         Console.WriteLine("¤¤¤ DELETE PRODUCT ¤¤¤");
 
-        Console.WriteLine("ENTER PROJECT ID TO DELETE :");
+        Console.WriteLine("ENTER PRODUCT ID TO DELETE :");
 
         if (int.TryParse(Console.ReadLine(), out int productId))
         {
@@ -430,6 +450,98 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
                 if (result)
                 {
                     Console.WriteLine("PRODUCT WAS DELETED SUCCESSFULLY");
+                }
+            }
+            else
+            {
+                Console.WriteLine("PRODUCT WAS NOT DELETED");
+            }
+            Console.ReadKey();
+        }
+    }
+
+    #endregion
+
+    #region StatusTypeDialog
+    private async Task CreateStatusTypeDialog()
+    {
+        Console.Clear();
+        // Create a new RegistrationForm object
+        var statusTypeRegistrationForm = new StatusTypeRegistrationForm();
+
+        Console.WriteLine("¤¤¤ CREATE STATUS TYPE ¤¤¤");
+
+        Console.Write("ENTER STATUS TYPE NAME:");
+        statusTypeRegistrationForm.StatusName = Console.ReadLine()!;
+
+        // Send the completed form to the service repository
+        var result = await _statusTypeService.CreateStatusTypeAsync(statusTypeRegistrationForm);
+        if (result != null)
+        {
+            Console.Write("STATUS TYPE WAS SUCCESSFULLY CREATED");
+        }
+        else
+        {
+            Console.WriteLine("STATUS TYPE WAS NOT CREATE");
+        }
+        Console.ReadKey();
+    }
+    private async Task GetAllStatusTypesDialog()
+    {
+        Console.Clear();
+        Console.WriteLine("-------- ALL STATUS TYPES -------");
+        var statusTypes = await _statusTypeService.GetAllStatusTypesAsync();
+
+        foreach (var statusType in statusTypes)
+        {
+            Console.WriteLine($"[{statusType.Id},{statusType.StatusName}]");
+        }
+        Console.ReadKey();
+    }
+    private async Task UpdateStatusTypeDialog()
+    {
+        Console.Clear();
+        var statusTypeUpdateForm = new StatusTypeUpdateForm();
+
+        Console.WriteLine("¤¤¤ UPDATE STATUS TYPE ¤¤¤");
+
+        Console.Write("STATUS TYPE NUMBER: ");
+        statusTypeUpdateForm.Id = int.Parse(Console.ReadLine()!);
+
+        Console.Write("NEW STATUS TYPE NAME: ");
+        statusTypeUpdateForm.StatusName = Console.ReadLine()!;
+        
+        var result = await _statusTypeService.UpdateStatusTypeAsync(statusTypeUpdateForm);
+        if (result != null)
+        {
+            Console.Write("STATUS TYPE WAS UPDATED SUCCESSFULLY");
+        }
+        else
+        {
+            Console.WriteLine("STATUS TYPE WAS NOT UPDATE");
+        }
+
+        Console.ReadKey();
+    }
+    private async Task DeleteStatusTypeDialog()
+    {
+        Console.Clear();
+
+        Console.WriteLine("¤¤¤ DELETE STATUS TYPE ¤¤¤");
+
+        Console.WriteLine("ENTER STATUS TYPE ID TO DELETE :");
+
+        if (int.TryParse(Console.ReadLine(), out int statusTypeId))
+        {
+            Console.WriteLine("ARE YOU SURE YOU WANT TO DELETE THIS STATUS TYPE? (YES/NO): ");
+
+            var option = Console.ReadLine()?.Trim().ToLower();
+            if (option == "yes")
+            {
+                var result = await _statusTypeService.DeleteStatusTypeAsync(statusTypeId);
+                if (result)
+                {
+                    Console.WriteLine("STATUS TYPE WAS DELETED SUCCESSFULLY");
                 }
             }
             else
