@@ -7,12 +7,13 @@ using Business.Services;
 
 namespace Presentation.ConsoleApp.Dialogs;
 
-public class MenuDialog(IProjectService projectService, ICustomerService customerService, IProductService productService, IStatusTypeService statusTypeService)
+public class MenuDialog(IProjectService projectService, ICustomerService customerService, IProductService productService, IStatusTypeService statusTypeService, IUserService userService)
 {
     private readonly IProjectService _projectService= projectService;
     private readonly ICustomerService _customerService = customerService;
     private readonly IProductService _productService = productService;
     private readonly IStatusTypeService _statusTypeService = statusTypeService;
+    private readonly IUserService _userService = userService;
 
     public async Task ShowMenu()
     {
@@ -45,6 +46,12 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
             Console.WriteLine("14. VIEW ALL STATUS TYPE ");
             Console.WriteLine("15. UPDATE STATUS TYPE ");
             Console.WriteLine("16. DELELTE STATUS TYPE ");
+
+            Console.WriteLine("¤¤¤  USER MENU ¤¤¤");
+            Console.WriteLine("17. CREATE NEW USER ");
+            Console.WriteLine("18. VIEW ALL USER ");
+            Console.WriteLine("19. UPDATE USER ");
+            Console.WriteLine("20. DELELTE USER ");
 
             Console.WriteLine("q EXIT APPLICATION");
             Console.WriteLine("-----------------------------");
@@ -102,6 +109,18 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
                     break;
                 case "16":
                     await DeleteStatusTypeDialog();
+                    break;
+                case "17":
+                    await CreateUserDialog();
+                    break;
+                case "18":
+                    await GetAllUsersDialog();
+                    break;
+                case "19":
+                    await UpdateUserDialog();
+                    break;
+                case "20":
+                    await DeleteUserDialog();
                     break;
 
                 case "q":
@@ -553,4 +572,104 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
     }
 
     #endregion
+
+    #region UserDialog
+    private async Task CreateUserDialog()
+    {
+        Console.Clear();
+        // Create a new RegistrationForm object
+        var userRegistrationForm = new UserRegistrationForm();
+
+        Console.WriteLine("¤¤¤ CREATE USER ¤¤¤");
+
+        Console.Write("ENTER USER FIRST NAME:");
+        userRegistrationForm.FirstName = Console.ReadLine()!;
+        Console.Write("ENTER USER LAST NAME:");
+        userRegistrationForm.LastName = Console.ReadLine()!;
+        Console.Write("ENTER USER EMAIL:");
+        userRegistrationForm.Email = Console.ReadLine()!;
+
+        // Send the completed form to the service repository
+        var result = await _userService.CreateUserAsync(userRegistrationForm);
+        if (result != null)
+        {
+            Console.Write("USER WAS SUCCESSFULLY CREATED");
+        }
+        else
+        {
+            Console.WriteLine("USER WAS NOT CREATE");
+        }
+        Console.ReadKey();
+    }
+    private async Task GetAllUsersDialog()
+    {
+        Console.Clear();
+        Console.WriteLine("-------- ALL USERS -------");
+        var users = await _userService.GetAllUsersAsync();
+
+        foreach (var user in users)
+        {
+            Console.WriteLine($"[{user.Id},{user.FirstName}, {user.LastName}, ]");
+        }
+        Console.ReadKey();
+    }
+    private async Task UpdateUserDialog()
+    {
+        Console.Clear();
+        var userUpdateForm = new UserUpdateForm();
+
+        Console.WriteLine("¤¤¤ UPDATE USER ¤¤¤");
+
+        Console.Write("USER NUMBER: ");
+        userUpdateForm.Id = int.Parse(Console.ReadLine()!);
+        Console.Write("NEW USER NAME: ");
+        userUpdateForm.FirstName = Console.ReadLine()!;
+        Console.Write("NEW USER LAST NAME:");
+        userUpdateForm.LastName = Console.ReadLine()!;
+        Console.Write("NEW USER EMAIL:");
+        userUpdateForm.Email = Console.ReadLine()!;
+
+        var result = await _userService.UpdateUserAsync(userUpdateForm);
+        if (result != null)
+        {
+            Console.Write("USER WAS UPDATED SUCCESSFULLY");
+        }
+        else
+        {
+            Console.WriteLine("USER WAS NOT UPDATE");
+        }
+
+        Console.ReadKey();
+    }
+    private async Task DeleteUserDialog()
+    {
+        Console.Clear();
+
+        Console.WriteLine("¤¤¤ DELETE USER ¤¤¤");
+
+        Console.WriteLine("ENTER USER ID TO DELETE :");
+
+        if (int.TryParse(Console.ReadLine(), out int userId))
+        {
+            Console.WriteLine("ARE YOU SURE YOU WANT TO DELETE THIS USER? (YES/NO): ");
+
+            var option = Console.ReadLine()?.Trim().ToLower();
+            if (option == "yes")
+            {
+                var result = await _userService.DeleteUserAsync(userId);
+                if (result)
+                {
+                    Console.WriteLine("USER WAS DELETED SUCCESSFULLY");
+                }
+            }
+            else
+            {
+                Console.WriteLine("USER WAS NOT DELETED");
+            }
+            Console.ReadKey();
+        }
+    }
+
+    #endregion
 }
+
