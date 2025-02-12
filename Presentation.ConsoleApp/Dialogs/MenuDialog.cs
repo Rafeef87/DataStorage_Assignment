@@ -609,7 +609,7 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
 
         foreach (var user in users)
         {
-            Console.WriteLine($"[{user.Id},{user.FirstName}, {user.LastName}, ]");
+            Console.WriteLine($"[{user.Id},{user.FirstName}, {user.LastName}, {user.Email}]");
         }
         Console.ReadKey();
     }
