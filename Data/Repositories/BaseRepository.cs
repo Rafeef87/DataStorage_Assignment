@@ -41,21 +41,9 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
 
     #region CRUD
     //CREATE
-    public virtual async Task<TEntity> CreateAsync(TEntity entity)
+    public virtual async Task AddAsync(TEntity entity)
     {
-        if (entity == null)
-            return null!;
-        try
-        {
-            var addedEntity = await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
-            return addedEntity.Entity; //This returns the saved object
-        }
-        catch (Exception ex) 
-        {
-            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
-            return null!;
-        }
+         await _dbSet.AddAsync(entity);
     }
     //Detta är genererat av Chat GPT 4o - en metod för att inkludera relaterade tabeller. READ
     public virtual async Task<IEnumerable<TEntity>> GetAllIncludingAsync(params Expression<Func<TEntity, object>>[] includeProperties)
@@ -74,62 +62,31 @@ public abstract class BaseRepository<TEntity>(DataContext context) : IBaseReposi
     //READ
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+       var entities = await _dbSet.ToListAsync();
+        return entities;
     }
-    public virtual async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> expression)
-    {
-        if (expression == null)
-            return null!;
-        return await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
+    public virtual async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> expression)
+    {      
+        var entity = await _dbSet.FirstOrDefaultAsync(expression);
+        return entity;
     }
     //UPDATE
-    public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> expression, TEntity updateEntity)
+    public virtual void Update(TEntity entity)
     {
-        if (updateEntity == null)
-            return null!;
-        try
-        {
-            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression);
-            if (existingEntity == null)
-            { 
-                Debug.WriteLine($"Entity with ID {expression} not found.");
-            return null!;
-            }
-
-            _context.Entry(existingEntity).CurrentValues.SetValues(updateEntity);
-            await _context.SaveChangesAsync();
-            return existingEntity;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
-            return null!;
-        }
+        _dbSet.Update(entity);
     }
     //DELETE
-    public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> expression)
+    public virtual void Remove(TEntity entity)
     {
-        if (expression == null)
-            return false;
-        try
-        {
-            var existingEntity = await _dbSet.FirstOrDefaultAsync(expression) ?? null!;
-            if (existingEntity == null)
-                return false;
-
-            _dbSet.Remove(existingEntity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error creating {nameof(TEntity)} entity :: {ex.Message}");
-            return false;
-        }
+        _dbSet.Remove(entity);
     }
      public virtual async Task<bool> AlreadyExistsAsync(Expression<Func<TEntity, bool>> expression)
      {
         return await _dbSet.AnyAsync(expression);
      }
+    public virtual async Task<int> SaveAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
 #endregion
 }
