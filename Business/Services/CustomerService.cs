@@ -17,9 +17,7 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
     {
         if (await _customerRepository.AlreadyExistsAsync(x => x.CustomerName == form.CustomerName))
             return false;
-
         await _customerRepository.BeginTransactionAsync();
-
         try
         {
             await _customerRepository.AddAsync(new CustomerEntity { CustomerName = form.CustomerName });
@@ -42,7 +40,6 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
     }
     public async Task<Customer> GetCustomerAsync(Expression<Func<CustomerEntity, bool>> expression)
     {
-
         var enttiy = await _customerRepository.GetAsync(expression);
         var customer = CustomerFactory.Create(enttiy!);
         return customer ?? null!;
@@ -52,9 +49,7 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
     {
         if (await _customerRepository.AlreadyExistsAsync(x => x.CustomerName == form.CustomerName))
             return false;
-
         await _customerRepository.BeginTransactionAsync();
-
         try
         {
             _customerRepository.Update(new CustomerEntity { CustomerName = form.CustomerName });
@@ -67,7 +62,6 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
             await _customerRepository.RollbackTransactionAsync();
             return false;
         }
-
     }
     //DELETE
     public async Task<bool> DeleteCustomerAsync(int id)
@@ -75,15 +69,13 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
         var entity = await _customerRepository.GetAsync(x => x.Id == id);
         if(entity == null)
             return false;
-
         await _customerRepository.BeginTransactionAsync();
-
         try
         {
             _customerRepository.Remove(entity);
-        await _customerRepository.SaveAsync();
-        await _customerRepository.CommitTransactionAsync();
-        return true;
+            await _customerRepository.SaveAsync();
+            await _customerRepository.CommitTransactionAsync();
+            return true;
         }
         catch
         {
@@ -91,7 +83,6 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
             return false;
         }
     }
-
     public async Task<bool> CustomerExsistsAsync(string customerName)
     {
             var result = await _customerRepository.AlreadyExistsAsync(x => x.CustomerName == customerName);

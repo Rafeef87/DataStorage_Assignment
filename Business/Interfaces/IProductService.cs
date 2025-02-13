@@ -7,9 +7,9 @@ namespace Business.Interfaces;
 
 public interface IProductService
 {
-    Task<Product> CreateProductAsync(ProductRegistrationForm form);
-    Task<IEnumerable<Product>> GetAllProductsAsync();
+    Task<bool> CreateProductAsync(ProductRegistrationForm form);
+    Task<IEnumerable<Product?>> GetAllProductsAsync();
     Task<Product> GetProductAsync(Expression<Func<ProductEntity, bool>> expression);
-    Task<Product> UpdateProductAsync(ProductUpdateForm form);
+    Task<bool> UpdateProductAsync(ProductUpdateForm form);
     Task<bool> DeleteProductAsync(int id);
 }
