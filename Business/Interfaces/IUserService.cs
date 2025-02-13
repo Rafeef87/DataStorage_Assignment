@@ -9,7 +9,8 @@ public interface IUserService
 {
     Task<bool> CreateUserAsync(UserRegistrationForm form);
     Task<IEnumerable<User?>> GetAllUsersAsync();
-    Task<User> GetUserAsync(Expression<Func<UserEntity, bool>> expression);
+    Task<User?> GetUserAsync(int id);
+    Task<User?> GetUserAsync(string firstName);
     Task<bool> UpdateUserAsync(UserUpdateForm from);
     Task<bool> DeleteUserAsync(int id);
 }

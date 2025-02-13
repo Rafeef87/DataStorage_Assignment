@@ -38,11 +38,15 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
         var customers = entties.Select(CustomerFactory.Create);
         return customers;
     }
-    public async Task<Customer> GetCustomerAsync(Expression<Func<CustomerEntity, bool>> expression)
+    public async Task<Customer?> GetCustomerAsync(int id)
     {
-        var enttiy = await _customerRepository.GetAsync(expression);
-        var customer = CustomerFactory.Create(enttiy!);
-        return customer ?? null!;
+        var enttiy = await _customerRepository.GetAsync(x => x.Id == id);
+        return CustomerFactory.Create(enttiy!);
+    }
+    public async Task<Customer?> GetCustomerAsync(string customerName)
+    {
+        var enttiy = await _customerRepository.GetAsync(x => x.CustomerName == customerName);
+        return CustomerFactory.Create(enttiy!);
     }
     //UPDATE
     public async Task<bool> UpdateCustomerAsync(CustomerUpdateForm form)

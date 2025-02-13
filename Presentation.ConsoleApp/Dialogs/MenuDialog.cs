@@ -1,5 +1,6 @@
 ﻿using System;
 using Business.Dtos;
+using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
 using Business.Services;
@@ -231,7 +232,7 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
     {
         Console.Clear ();
         // Create a new ProjectRegistrationForm object
-        var projectRegistrationForm = new ProjectRegistrationForm();
+        ProjectRegistrationForm projectRegistrationForm = ProjectFactory.Create();
 
         Console.WriteLine("¤¤¤ CREATE PROJECT ¤¤¤");
 

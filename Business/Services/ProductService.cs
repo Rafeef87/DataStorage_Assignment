@@ -38,12 +38,15 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         var products = entties.Select(ProductFactory.Create);
         return products;
     }
-    public async Task<Product> GetProductAsync(Expression<Func<ProductEntity, bool>> expression)
+    public async Task<Product?> GetProductAsync(int id)
     {
-
-        var enttiy = await _productRepository.GetAsync(expression);
-        var product= ProductFactory.Create(enttiy!);
-        return product ?? null!;
+        var enttiy = await _productRepository.GetAsync(p => p.Id == id);
+        return ProductFactory.Create(enttiy!);
+    }
+    public async Task<Product?> GetProductAsync(string productName)
+    {
+        var enttiy = await _productRepository.GetAsync(p => p.ProductName == productName);
+        return ProductFactory.Create(enttiy!);
     }
     //UPDATE
     public async Task<bool> UpdateProductAsync(ProductUpdateForm form)

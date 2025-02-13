@@ -9,7 +9,8 @@ public interface IProductService
 {
     Task<bool> CreateProductAsync(ProductRegistrationForm form);
     Task<IEnumerable<Product?>> GetAllProductsAsync();
-    Task<Product> GetProductAsync(Expression<Func<ProductEntity, bool>> expression);
+    Task<Product?> GetProductAsync(int id);
+    Task<Product?> GetProductAsync(string productName);
     Task<bool> UpdateProductAsync(ProductUpdateForm form);
     Task<bool> DeleteProductAsync(int id);
 }

@@ -38,12 +38,15 @@ public class UserService(IUserRepository userRepository) : IUserService
         var users = entties.Select(UserFactory.Create);
         return users ?? [];
     }
-    public async Task<User> GetUserAsync(Expression<Func<UserEntity, bool>> expression)
+    public async Task<User?> GetUserAsync(int id)
     {
-
-        var enttiy = await _userRepository.GetAsync(expression);
-        var user = UserFactory.Create(enttiy!);
-        return user ?? null!;
+        var enttiy = await _userRepository.GetAsync(x => x.Id == id);
+        return UserFactory.Create(enttiy!);
+    }
+    public async Task<User?> GetUserAsync(string firstName)
+    {
+        var enttiy = await _userRepository.GetAsync(x => x.FirstName == firstName);
+        return UserFactory.Create(enttiy!);
     }
     //UPDATE
     public async Task<bool> UpdateUserAsync(UserUpdateForm form)

@@ -9,7 +9,8 @@ public interface IStatusTypeService
 {
     Task<bool> CreateStatusTypeAsync(StatusTypeRegistrationForm form);
     Task<IEnumerable<StatusType?>> GetAllStatusTypesAsync();
-    Task<StatusType> GetStatusTypeAsync(Expression<Func<StatusTypeEntity, bool>> expression);
+    Task<StatusType?> GetStatusTypeAsync(int id);
+    Task<StatusType?> GetStatusTypeAsync(string statusName);
     Task<bool> UpdateStatusTypeAsync(StatusTypeUpdateForm from);
     Task<bool> DeleteStatusTypeAsync(int id);
 }

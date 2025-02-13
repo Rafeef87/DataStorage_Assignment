@@ -38,12 +38,15 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
         var statusTypes = entties.Select(StatusTypeFactory.Create);
         return statusTypes ?? [];
     }
-    public async Task<StatusType> GetStatusTypeAsync(Expression<Func<StatusTypeEntity, bool>> expression)
+    public async Task<StatusType?> GetStatusTypeAsync(int id)
     {
-
-        var enttiy = await _statusTypeRepository.GetAsync(expression);
-        var statusType = StatusTypeFactory.Create(enttiy!);
-        return statusType ?? null!;
+        var enttiy = await _statusTypeRepository.GetAsync(x => x.Id == id);
+        return StatusTypeFactory.Create(enttiy!);
+    }
+    public async Task<StatusType?> GetStatusTypeAsync(string statusName)
+    {
+        var enttiy = await _statusTypeRepository.GetAsync(x => x.StatusName == statusName);
+        return StatusTypeFactory.Create(enttiy!);
     }
     //UPDATE
     public async Task<bool> UpdateStatusTypeAsync(StatusTypeUpdateForm form)

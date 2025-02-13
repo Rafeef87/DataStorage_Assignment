@@ -6,25 +6,119 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 
 namespace Business.Services;
 
-public class ProjectService(IProjectRepository projectRepository) : IProjectService
+public class ProjectService(ICustomerService  customerService, IProductService productService, IStatusTypeService statusTypeService, IUserService userService, IProjectRepository projectRepository) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
-    //CREATE
-    public async Task<Project> CreateProjectAsync(ProjectRegistrationForm form)
-    {
-        try
-        {
-            var enttiy = await _projectRepository.CreateAsync(ProjectFactory.Create(form));
+    private readonly ICustomerService _customerService = customerService;
+    private readonly IProductService _productService = productService;
+    private readonly IStatusTypeService _statusTypeService = statusTypeService;
+    private readonly IUserService _userService = userService;
 
-            return ProjectFactory.Create(enttiy);
-        }
-        catch (Exception ex)
+    //CREATE
+    public async Task CreateProjectAsync(ProjectRegistrationForm form)
+    {
+        var customer = await _customerService.GetCustomerAsync(form.Customer.CustomerName);
+        if (customer == null)
         {
-            Debug.WriteLine(ex.Message);
-            return null!;
+            var result = await _customerService.CreateCustomerAsync(form.Customer);
+            if (result)
+                customer = await _customerService.GetCustomerAsync(form.Customer.CustomerName);
+        }
+        if (customer != null)
+        { 
+            await _projectRepository.BeginTransactionAsync();
+            try
+            {
+                var projectEnttiy = ProjectFactory.Create(form);
+                projectEnttiy!.CustomerId = customer.Id;
+
+                await _projectRepository.AddAsync(projectEnttiy);
+                await _projectRepository.SaveAsync();
+                await _projectRepository.CommitTransactionAsync();
+            }
+            catch 
+            {
+                await _projectRepository.RollbackTransactionAsync();
+            }
+        }
+
+        var product = await _productService.GetProductAsync(form.Product.ProductName);
+        if (product == null)
+        {
+            var result = await _productService.CreateProductAsync(form.Product);
+            if (result)
+                product = await _productService.GetProductAsync(form.Product.ProductName);
+        }
+        if (product != null)
+        {
+            await _projectRepository.BeginTransactionAsync();
+            try
+            {
+                var projectEnttiy = ProjectFactory.Create(form);
+                projectEnttiy!.ProductId = product.Id;
+
+                await _projectRepository.AddAsync(projectEnttiy);
+                await _projectRepository.SaveAsync();
+                await _projectRepository.CommitTransactionAsync();
+            }
+            catch
+            {
+                await _projectRepository.RollbackTransactionAsync();
+            }
+        }
+
+        var status = await _statusTypeService.GetStatusTypeAsync(form.Status.StatusName);
+        if (status == null)
+        {
+            var result = await _statusTypeService.CreateStatusTypeAsync(form.Status);
+            if (result)
+                status = await _statusTypeService.GetStatusTypeAsync(form.Status.StatusName);
+        }
+        if (status != null)
+        {
+            await _projectRepository.BeginTransactionAsync();
+            try
+            {
+                var projectEnttiy = ProjectFactory.Create(form);
+                projectEnttiy!.StatusId = status.Id;
+
+                await _projectRepository.AddAsync(projectEnttiy);
+                await _projectRepository.SaveAsync();
+                await _projectRepository.CommitTransactionAsync();
+            }
+            catch
+            {
+                await _projectRepository.RollbackTransactionAsync();
+            }
+        }
+
+        var user = await _userService.GetUserAsync(form.User.FirstName);
+        if (user == null)
+        {
+            var result = await _userService.CreateUserAsync(form.User);
+            if (result)
+                user = await _userService.GetUserAsync(form.User.FirstName);
+        }
+        if (user != null)
+        {
+            await _projectRepository.BeginTransactionAsync();
+            try
+            {
+                var projectEnttiy = ProjectFactory.Create(form);
+                projectEnttiy!.UserId = user.Id;
+
+                await _projectRepository.AddAsync(projectEnttiy);
+                await _projectRepository.SaveAsync();
+                await _projectRepository.CommitTransactionAsync();
+            }
+            catch
+            {
+                await _projectRepository.RollbackTransactionAsync();
+            }
         }
     }
     //READ
@@ -36,7 +130,7 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
         var projects = entities.Select(ProjectFactory.Read);
         return projects;
     }
-    public async Task<IEnumerable<Project>> GetAllProjectsAsync()
+    public async Task<IEnumerable<Project?>> GetAllProjectsAsync()
     {
         var entties = await _projectRepository.GetAllAsync();
         var projects = entties.Select(ProjectFactory.Create);
@@ -46,38 +140,43 @@ public class ProjectService(IProjectRepository projectRepository) : IProjectServ
     {
 
         var enttiy = await _projectRepository.GetAsync(expression);
-        var project = ProjectFactory.Create(enttiy);
+        var project = ProjectFactory.Create(enttiy!);
         return project ?? null!;
     }
     //UPDATE
-    public async Task<Project> UpdateProjectAsync(ProjectUpdateForm form)
+    public async Task UpdateProjectAsync(ProjectUpdateForm form)
     {
-        try {
-            var updateEntity = ProjectFactory.Create(form);
-
-            // Update the project in the database by submitting the correct entity
-            var entity = await _projectRepository.UpdateAsync(x => x.Id == form.Id, updateEntity);
-            // Create a Project object (for use in the application) from the updated ProjectEntity
-            var project = ProjectFactory.Create(entity);
-            return project ?? null!;
-        }
-        catch (Exception ex)
+        await _projectRepository.BeginTransactionAsync();
+        try
         {
-            Debug.WriteLine(ex.Message);
-            return null!;
+            _projectRepository.Update(new ProjectEntity { ProjectName = form.ProjectName });
+            await _projectRepository.SaveAsync();
+            await _projectRepository.CommitTransactionAsync();
+           
+        }
+        catch
+        {
+            await _projectRepository.RollbackTransactionAsync();
+            
         }
     }
     //DELETE
     public async Task<bool> DeleteProjectAsync(int id)
     {
+        var entity = await _projectRepository.GetAsync(x => x.Id == id);
+        if (entity == null)
+            return false;
+        await _projectRepository.BeginTransactionAsync();
         try
         {
-            var result = await _projectRepository.DeleteAsync(x => x.Id == id);
-            return result;
+            _projectRepository.Remove(entity);
+            await _projectRepository.SaveAsync();
+            await _projectRepository.CommitTransactionAsync();
+            return true;
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.WriteLine(ex.Message);
+            await _projectRepository.RollbackTransactionAsync();
             return false;
         }
     }
