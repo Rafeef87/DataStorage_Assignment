@@ -5,6 +5,7 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 
 namespace Business.Services;
 
@@ -12,15 +13,26 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
 {
     private readonly IStatusTypeRepository _statusTypeRepository = statusTypeRepository;
     //CREATE
-    public async Task<StatusType> CreateStatusTypeAsync(StatusTypeRegistrationForm form)
+    public async Task<bool> CreateStatusTypeAsync(StatusTypeRegistrationForm form)
     {
-        var enttiy = await _statusTypeRepository.GetAsync(x => x.StatusName == form.StatusName);
-        enttiy ??= await _statusTypeRepository.CreateAsync(StatusTypeFactory.Create(form));
-
-        return StatusTypeFactory.Create(enttiy);
+        if (await _statusTypeRepository.AlreadyExistsAsync(x => x.StatusName == form.StatusName))
+            return false;
+        await _statusTypeRepository.BeginTransactionAsync();
+        try
+        {
+            await _statusTypeRepository.AddAsync(new StatusTypeEntity { StatusName = form.StatusName });
+            await _statusTypeRepository.SaveAsync();
+            await _statusTypeRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _statusTypeRepository.RollbackTransactionAsync();
+            return false;
+        }
     }
     //READ
-    public async Task<IEnumerable<StatusType>> GetAllStatusTypesAsync()
+    public async Task<IEnumerable<StatusType?>> GetAllStatusTypesAsync()
     {
         var entties = await _statusTypeRepository.GetAllAsync();
         var statusTypes = entties.Select(StatusTypeFactory.Create);
@@ -30,21 +42,51 @@ public class StatusTypeService(IStatusTypeRepository statusTypeRepository) : ISt
     {
 
         var enttiy = await _statusTypeRepository.GetAsync(expression);
-        var statusType = StatusTypeFactory.Create(enttiy);
+        var statusType = StatusTypeFactory.Create(enttiy!);
         return statusType ?? null!;
     }
     //UPDATE
-    public async Task<StatusType> UpdateStatusTypeAsync(StatusTypeUpdateForm form)
+    public async Task<bool> UpdateStatusTypeAsync(StatusTypeUpdateForm form)
     {
-        var updateEntity = StatusTypeFactory.Create(form);
-        var entity = await _statusTypeRepository.UpdateAsync(p => p.Id == form.Id, updateEntity);
-        var statusType = StatusTypeFactory.Create(entity);
-        return statusType ?? null!;
+        if (await _statusTypeRepository.AlreadyExistsAsync(x => x.StatusName == form.StatusName))
+            return false;
+        await _statusTypeRepository.BeginTransactionAsync();
+        try
+        {
+            _statusTypeRepository.Update(new StatusTypeEntity { StatusName = form.StatusName });
+            await _statusTypeRepository.SaveAsync();
+            await _statusTypeRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _statusTypeRepository.RollbackTransactionAsync();
+            return false;
+        }
     }
     //DELETE
     public async Task<bool> DeleteStatusTypeAsync(int id)
     {
-        var result = await _statusTypeRepository.DeleteAsync(x => x.Id == id);
+        var entity = await _statusTypeRepository.GetAsync(x => x.Id == id);
+        if (entity == null)
+            return false;
+        await _statusTypeRepository.BeginTransactionAsync();
+        try
+        {
+            _statusTypeRepository.Remove(entity);
+            await _statusTypeRepository.SaveAsync();
+            await _statusTypeRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _statusTypeRepository.RollbackTransactionAsync();
+            return false;
+        }
+    }
+    public async Task<bool> StatusTypeExsistsAsync(string statusName)
+    {
+        var result = await _statusTypeRepository.AlreadyExistsAsync(x => x.StatusName == statusName);
         return result;
     }
 }
