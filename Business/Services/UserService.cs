@@ -5,6 +5,7 @@ using Business.Interfaces;
 using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 
 namespace Business.Services;
 
@@ -12,15 +13,26 @@ public class UserService(IUserRepository userRepository) : IUserService
 {
     private readonly IUserRepository _userRepository = userRepository;
     //CREATE
-    public async Task<User> CreateUserAsync(UserRegistrationForm form)
+    public async Task<bool> CreateUserAsync(UserRegistrationForm form)
     {
-        var enttiy = await _userRepository.GetAsync(x => x.FirstName == form.FirstName);
-        enttiy ??= await _userRepository.CreateAsync(UserFactory.Create(form));
-
-        return UserFactory.Create(enttiy);
+        if (await _userRepository.AlreadyExistsAsync(x => x.FirstName == form.FirstName))
+            return false;
+        await _userRepository.BeginTransactionAsync();
+        try
+        {
+            await _userRepository.AddAsync(new UserEntity { FirstName = form.FirstName });
+            await _userRepository.SaveAsync();
+            await _userRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _userRepository.RollbackTransactionAsync();
+            return false;
+        }
     }
     //READ
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<User?>> GetAllUsersAsync()
     {
         var entties = await _userRepository.GetAllAsync();
         var users = entties.Select(UserFactory.Create);
@@ -30,21 +42,52 @@ public class UserService(IUserRepository userRepository) : IUserService
     {
 
         var enttiy = await _userRepository.GetAsync(expression);
-        var user = UserFactory.Create(enttiy);
+        var user = UserFactory.Create(enttiy!);
         return user ?? null!;
     }
     //UPDATE
-    public async Task<User> UpdateUserAsync(UserUpdateForm form)
+    public async Task<bool> UpdateUserAsync(UserUpdateForm form)
     {
-        var updateEntity = UserFactory.Create(form);
-        var entity = await _userRepository.UpdateAsync(p => p.Id == form.Id, updateEntity);
-        var user = UserFactory.Create(entity);
-        return user ?? null!;
+        if (await _userRepository.AlreadyExistsAsync(x => x.FirstName == form.FirstName))
+            return false;
+        await _userRepository.BeginTransactionAsync();
+        try
+        {
+            _userRepository.Update(new UserEntity { FirstName = form.FirstName });
+            await _userRepository.SaveAsync();
+            await _userRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _userRepository.RollbackTransactionAsync();
+            return false;
+        }
     }
     //DELETE
     public async Task<bool> DeleteUserAsync(int id)
     {
-        var result = await _userRepository.DeleteAsync(x => x.Id == id);
+        var entity = await _userRepository.GetAsync(x => x.Id == id);
+        if (entity == null)
+            return false;
+        await _userRepository.BeginTransactionAsync();
+        try
+        {
+            _userRepository.Remove(entity);
+            await _userRepository.SaveAsync();
+            await _userRepository.CommitTransactionAsync();
+            return true;
+        }
+        catch
+        {
+            await _userRepository.RollbackTransactionAsync();
+            return false;
+        }
+        ;
+    }
+    public async Task<bool> UserExsistsAsync(string userName)
+    {
+        var result = await _userRepository.AlreadyExistsAsync(x => x.FirstName == userName);
         return result;
     }
 }
