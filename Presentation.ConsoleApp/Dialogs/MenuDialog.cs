@@ -29,33 +29,34 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
             Console.WriteLine("2. VIEW ALL PROJECT ");
             Console.WriteLine("3. UPDATE PROJECT ");
             Console.WriteLine("4. DELELTE PROJECT ");
-
+            Console.WriteLine("");
             Console.WriteLine("¤¤¤ CUSTOMER MENU ¤¤¤");
             Console.WriteLine("5. CREATE NEW CUSTOMER ");
             Console.WriteLine("6. VIEW ALL CUSTOMER ");
             Console.WriteLine("7. UPDATE CUSTOMER ");
             Console.WriteLine("8. DELELTE CUSTOMER ");
-
+            Console.WriteLine("");
             Console.WriteLine("¤¤¤ PRODUCT MENU ¤¤¤");
             Console.WriteLine("9. CREATE NEW PRODUCT ");
             Console.WriteLine("10. VIEW ALL PRODUCT ");
             Console.WriteLine("11. UPDATE PRODUCT ");
             Console.WriteLine("12. DELELTE PRODUCT ");
-
+            Console.WriteLine("");
             Console.WriteLine("¤¤¤  STATUS TYPE MENU ¤¤¤");
             Console.WriteLine("13. CREATE NEW STATUS TYPE ");
             Console.WriteLine("14. VIEW ALL STATUS TYPE ");
             Console.WriteLine("15. UPDATE STATUS TYPE ");
             Console.WriteLine("16. DELELTE STATUS TYPE ");
-
+            Console.WriteLine("");
             Console.WriteLine("¤¤¤  USER MENU ¤¤¤");
             Console.WriteLine("17. CREATE NEW USER ");
             Console.WriteLine("18. VIEW ALL USER ");
             Console.WriteLine("19. UPDATE USER ");
             Console.WriteLine("20. DELELTE USER ");
-
+            Console.WriteLine("");
             Console.WriteLine("q EXIT APPLICATION");
             Console.WriteLine("-----------------------------");
+            Console.WriteLine("");
             Console.Write("SELSCT YOUR OPTION: ");
 
             string option = Console.ReadLine()!;
@@ -150,15 +151,10 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         customerRegistrationForm.CustomerName = Console.ReadLine()!;
 
         // Send the completed form to the service repository
-        var result = await _customerService.CreateCustomerAsync(customerRegistrationForm);
-        if (result != null)
-        {
+         await _customerService.CreateCustomerAsync(customerRegistrationForm);
+        
             Console.Write("CUSTOMER WAS SUCCESSFULLY CREATED");
-        }
-        else
-        {
-            Console.WriteLine("CUSTOMER WAS NOT CREATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task GetAllCustomersDialog()
@@ -167,9 +163,16 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         Console.WriteLine("-------- ALL CUSTOMERS -------");
         var customers = await _customerService.GetAllCustomersAsync();
 
-        foreach (var customer in customers)
+        if (customers != null)
         {
-            Console.WriteLine($"[{customer.Id},{customer.CustomerName}]");
+                foreach (var customer in customers)
+            {
+                Console.WriteLine($"[{customer.Id}, {customer.CustomerName}]");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No Customers found");
         }
         Console.ReadKey();
     }
@@ -187,14 +190,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         customerUpdateForm.CustomerName = Console.ReadLine()!;
 
         var result = await _customerService.UpdateCustomerAsync(customerUpdateForm);
-        if (result != null)
-        {
+       
             Console.Write("CUSTOMER WAS UPDATED SUCCESSFULLY");
-        }
-        else
-        {
-            Console.WriteLine("CUSTOMER WAS NOT UPDATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task DeleteCustomerDialog()
@@ -258,16 +256,11 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         projectRegistrationForm.ProductId = int.Parse(Console.ReadLine()!);
 
         // Send the completed form to the service repository
-        var result = await _projectService.CreateProjectAsync(projectRegistrationForm);
-        if (result != null)
-        {
+        await _projectService.CreateProjectAsync(projectRegistrationForm);
+        
             Console.Write("PROJECT WAS SUCCESSFULLY CREATED");
 
-        }
-        else
-        {
-            Console.WriteLine("PROJECT WAS NOT CREATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task GetAllProjectsDialog()
@@ -344,15 +337,10 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         Console.Write("NEW PRODUCT Id: ");
         projectUpdateForm.ProductId = int.Parse(Console.ReadLine()!);
 
-        var result = await _projectService.UpdateProjectAsync(projectUpdateForm);
-        if (result != null)
-        {
+        await _projectService.UpdateProjectAsync(projectUpdateForm);
+        
             Console.Write("PROJECT WAS UPDATED SUCCESSFULLY");
-        }
-        else
-        {
-            Console.WriteLine("PROJECT WAS NOT UPDATE");
-        }
+        
 
         Console.ReadKey();
     }
@@ -402,14 +390,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
 
         // Send the completed form to the service repository
         var result = await _productService.CreateProductAsync(productRegistrationForm);
-        if (result != null)
-        {
+        
             Console.Write("PRODUCT WAS SUCCESSFULLY CREATED");
-        }
-        else
-        {
-            Console.WriteLine("PRODUCT WAS NOT CREATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task GetAllProductsDialog()
@@ -417,10 +400,17 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         Console.Clear();
         Console.WriteLine("-------- ALL PRODUCTS -------");
         var products = await _productService.GetAllProductsAsync();
-
-        foreach (var product in products)
+        if (products != null)
         {
-            Console.WriteLine($"[{product.Id},{product.ProductName}, {product.Price}]");
+
+            foreach (var product in products)
+            {
+                Console.WriteLine($"[{product.Id},{product.ProductName}, {product.Price}]");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No Products found");
         }
         Console.ReadKey();
     }
@@ -440,14 +430,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         productUpdateForm.Price = decimal.Parse(Console.ReadLine()!);
 
         var result = await _productService.UpdateProductAsync(productUpdateForm);
-        if (result != null)
-        {
+        
             Console.Write("PRODUCT WAS UPDATED SUCCESSFULLY");
-        }
-        else
-        {
-            Console.WriteLine("PRODUCT WAS NOT UPDATE");
-        }
+        
 
         Console.ReadKey();
     }
@@ -496,14 +481,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
 
         // Send the completed form to the service repository
         var result = await _statusTypeService.CreateStatusTypeAsync(statusTypeRegistrationForm);
-        if (result != null)
-        {
+       
             Console.Write("STATUS TYPE WAS SUCCESSFULLY CREATED");
-        }
-        else
-        {
-            Console.WriteLine("STATUS TYPE WAS NOT CREATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task GetAllStatusTypesDialog()
@@ -511,10 +491,16 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         Console.Clear();
         Console.WriteLine("-------- ALL STATUS TYPES -------");
         var statusTypes = await _statusTypeService.GetAllStatusTypesAsync();
-
-        foreach (var statusType in statusTypes)
+        if(statusTypes != null)
+        { 
+            foreach (var statusType in statusTypes)
+            {
+                Console.WriteLine($"[{statusType.Id},{statusType.StatusName}]");
+            }
+        }
+        else
         {
-            Console.WriteLine($"[{statusType.Id},{statusType.StatusName}]");
+            Console.WriteLine("No Products found");
         }
         Console.ReadKey();
     }
@@ -532,14 +518,10 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         statusTypeUpdateForm.StatusName = Console.ReadLine()!;
         
         var result = await _statusTypeService.UpdateStatusTypeAsync(statusTypeUpdateForm);
-        if (result != null)
-        {
+        
             Console.Write("STATUS TYPE WAS UPDATED SUCCESSFULLY");
-        }
-        else
-        {
-            Console.WriteLine("STATUS TYPE WAS NOT UPDATE");
-        }
+       
+        
 
         Console.ReadKey();
     }
@@ -592,14 +574,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
 
         // Send the completed form to the service repository
         var result = await _userService.CreateUserAsync(userRegistrationForm);
-        if (result != null)
-        {
+        
             Console.Write("USER WAS SUCCESSFULLY CREATED");
-        }
-        else
-        {
-            Console.WriteLine("USER WAS NOT CREATE");
-        }
+        
         Console.ReadKey();
     }
     private async Task GetAllUsersDialog()
@@ -607,12 +584,19 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         Console.Clear();
         Console.WriteLine("-------- ALL USERS -------");
         var users = await _userService.GetAllUsersAsync();
-
-        foreach (var user in users)
-        {
-            Console.WriteLine($"[{user.Id},{user.FirstName}, {user.LastName}, {user.Email}]");
+        if (users != null)
+        { 
+            foreach (var user in users)
+            {
+                Console.WriteLine($"[{user.Id},{user.FirstName}, {user.LastName}, {user.Email}]");
+            }
         }
-        Console.ReadKey();
+        else
+        {
+            Console.WriteLine("No Products found");
+        }
+
+Console.ReadKey();
     }
     private async Task UpdateUserDialog()
     {
@@ -631,14 +615,9 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         userUpdateForm.Email = Console.ReadLine()!;
 
         var result = await _userService.UpdateUserAsync(userUpdateForm);
-        if (result != null)
-        {
+        
             Console.Write("USER WAS UPDATED SUCCESSFULLY");
-        }
-        else
-        {
-            Console.WriteLine("USER WAS NOT UPDATE");
-        }
+        
 
         Console.ReadKey();
     }

@@ -35,8 +35,7 @@ public class CustomerService(ICustomerRepository customerRepository) : ICustomer
     public async Task<IEnumerable<Customer?>> GetAllCustomersAsync()
     {
         var entties = await _customerRepository.GetAllAsync();
-        var customers = entties.Select(CustomerFactory.Create);
-        return customers;
+        return entties.Select(CustomerFactory.Create);
     }
     public async Task<Customer?> GetCustomerAsync(int id)
     {
