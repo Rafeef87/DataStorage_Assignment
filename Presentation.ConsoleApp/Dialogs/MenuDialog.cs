@@ -500,7 +500,7 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         }
         else
         {
-            Console.WriteLine("No Products found");
+            Console.WriteLine("No StatusTypes found");
         }
         Console.ReadKey();
     }
@@ -593,7 +593,7 @@ public class MenuDialog(IProjectService projectService, ICustomerService custome
         }
         else
         {
-            Console.WriteLine("No Products found");
+            Console.WriteLine("No Users found");
         }
 
 Console.ReadKey();
